@@ -4,14 +4,14 @@ using FDFD, PyPlot, PyCall, AxisArrays
 
 export plot_field, plot_device, add_scalebar, add_wavelengthbar
 
-"    plot_field(field::Field; cbar::Bool=false, funcz=real)"
+"    plot_field(field::Field; cbar::Bool=false, funcz=real, showtext=true)"
 function plot_field(field::Field; cbar::Bool=false, funcz=real, showtext=true)
 	fig, ax = subplots(1);
-	plot_field(ax, field; cbar=cbar, funcz=funcz, dotext=dotext);
+	plot_field(ax, field; cbar=cbar, funcz=funcz, showtext=showtext);
 	return ax
 end
 
-"    plot_field(ax::PyObject, field::Field; cbar::Bool=false, funcz=real)"
+"    plot_field(ax::PyObject, field::Field; cbar::Bool=false, funcz=real, showtext=true)"
 function plot_field(ax::PyObject, field::Field; cbar::Bool=false, funcz=real, showtext=true)
 	isa(field, FieldTM) && (Z = funcz.(field[:,:,:Ez]).');
 	isa(field, FieldTE) && (Z = funcz.(field[:,:,:Hz]).');
@@ -29,10 +29,8 @@ function plot_field(ax::PyObject, field::Field; cbar::Bool=false, funcz=real, sh
 		error("Unknown function specified.");
 	end
 
-	extents = [ field.grid.bounds[1][1], field.grid.bounds[2][1],
-	            field.grid.bounds[1][2], field.grid.bounds[2][2] ];
-
-	mappable = ax[:imshow](Z, cmap=cmap, extent=extents, origin="lower", vmin=vmin, vmax=vmax, rasterized=true);
+	mappable = ax[:pcolormesh](xe(field.grid), ye(field.grid), Z, cmap=cmap, vmin=vmin, vmax=vmax, rasterized=true);
+	axis("image");
 	cbar && colorbar(mappable, ax=ax, label=L"$\vert E \vert$");
 	showtext && ax[:set_xlabel](L"$x$");
 	showtext && ax[:set_ylabel](L"$y$");
