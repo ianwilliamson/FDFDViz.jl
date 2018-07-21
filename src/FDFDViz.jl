@@ -30,7 +30,7 @@ function plot_field(ax::PyObject, field::Field; cbar::Bool=false, funcz=real, sh
 	end
 
 	mappable = ax[:pcolormesh](xe(field.grid), ye(field.grid), Z, cmap=cmap, vmin=vmin, vmax=vmax, rasterized=true);
-	axis("image");
+	ax[:axis]("image");
 	cbar && colorbar(mappable, ax=ax, label=L"$\vert E \vert$");
 	showtext && ax[:set_xlabel](L"$x$");
 	showtext && ax[:set_ylabel](L"$y$");
